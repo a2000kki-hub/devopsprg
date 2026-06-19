@@ -59,7 +59,7 @@ pipeline {
         always {
             echo 'Cleaning up Jenkins workspace...'
             // Cleans up built images locally on the Jenkins server to save disk space
-            batscript: "docker rmi ${'myapp'}:${'myapp'} ${'myapp'}:latest", returnstatus: true
+            bat script: "docker rmi myapp:myapp myapp:latest", returnStatus: true
         }
         success {
             echo 'Pipeline completed successfully! Webapp is live.'
