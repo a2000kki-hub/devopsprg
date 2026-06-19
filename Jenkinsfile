@@ -36,7 +36,7 @@ pipeline {
             steps {
                 echo 'Logging into Docker Hub and pushing image...'
                 // Securely logs into Docker Hub using Jenkins' built-in credential manager
-                withCredentials([usernamePassword(credentialsId: "${dh2uhf2i}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                withCredentials([usernamePassword(credentialsId: "${'dh2uhf2i'}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     bat "echo ${PASS} | docker login -u ${USER} --password-stdin"
                     bat "docker push ${'myapp'}:${BUILD_NUMBER}"
                     bat "docker push ${'myapp'}:latest"
