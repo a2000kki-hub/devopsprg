@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: webapp
-        image:dh2uhf2i/myapp:latest # Replace with your username
+        image: dh2uhf2i/myapp:latest # Replace with your username
         ports:
         - containerPort: 80
         resources:
