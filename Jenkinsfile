@@ -27,8 +27,8 @@ pipeline {
             steps {
                 echo 'Building the production Docker image...'
                 // Builds the container using the local Dockerfile
-                bat "docker build -t ${'myapp'}:${BUILD_NUMBER} ."
-                bat "docker tag ${'myapp'}:${BUILD_NUMBER} ${'myapp'}:latest"
+                bat "docker build -t ${'myapp:13'}:${BUILD_NUMBER} ."
+                bat "docker tag ${'myapp:13'}:${BUILD_NUMBER} ${'myapp'}:latest"
             }
         }
 
@@ -38,7 +38,9 @@ pipeline {
                 // Securely logs into Docker Hub using Jenkins' built-in credential manager
                 withCredentials([usernamePassword(credentialsId: "${'dh2uhf2i'}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     bat "echo ${PASS} | docker login -u ${USER} --password-stdin"
-                    bat "docker push ${'myapp'}:${BUILD_NUMBER}"
+                    bat "docker tag myapp:13 %USER%/myapp:13"
+                    bat "docker tag myapp:13 %USER%/myapp:latest"
+                    bat "docker push ${'myapp:13'}:${BUILD_NUMBER}"
                     bat "docker push ${'myapp'}:latest"
                 }
             }
@@ -58,7 +60,7 @@ pipeline {
         always {
             echo 'Cleaning up Jenkins workspace...'
             // Cleans up built images locally on the Jenkins server to save disk space
-            bat script: "docker rmi myapp:myapp myapp:latest", returnStatus: true
+           bat script: 'docker rmi myapp:13 myapp:latest dh2uhf2i/myapp:13 dh2uhf2i/myapp:latest', returnStatus: true
         }
         success {
             echo 'Pipeline completed successfully! Webapp is live.'
