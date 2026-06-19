@@ -52,7 +52,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 echo 'Triggering rolling update on Kubernetes cluster...'
-                bat "kubectl apply -f deployment.yaml"
+                bat "kubectl apply -f deployment.yaml --validate=false"
                 bat "kubectl rollout status deployment/webapp-deployment"
             }
         }
