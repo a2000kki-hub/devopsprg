@@ -19,8 +19,8 @@ pipeline {
             steps {
                 echo 'Installing HTMLHint and testing source code...'
                 // Runs the same HTML lint test inside the Jenkins workspace
-                sh 'npm install -g htmlhint'
-                sh 'htmlhint index.html'
+                bat 'npm install -g htmlhint'
+                bat 'htmlhint index.html'
             }
         }
 
@@ -28,8 +28,8 @@ pipeline {
             steps {
                 echo 'Building the production Docker image...'
                 // Builds the container using the local Dockerfile
-                sh "docker build -t ${myapp}:${BUILD_NUMBER} ."
-                sh "docker tag ${myapp}:${BUILD_NUMBER} ${myapp}:latest"
+                bat "docker build -t ${'myapp'}:${BUILD_NUMBER} ."
+                bat "docker tag ${'myapp'}:${BUILD_NUMBER} ${'myapp'}:latest"
             }
         }
 
@@ -38,9 +38,9 @@ pipeline {
                 echo 'Logging into Docker Hub and pushing image...'
                 // Securely logs into Docker Hub using Jenkins' built-in credential manager
                 withCredentials([usernamePassword(credentialsId: "${dh2uhf2i}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    sh "echo ${PASS} | docker login -u ${USER} --password-stdin"
-                    sh "docker push ${myapp}:${BUILD_NUMBER}"
-                    sh "docker push ${myapp}:latest"
+                    bat "echo ${PASS} | docker login -u ${USER} --password-stdin"
+                    bat "docker push ${'myapp'}:${BUILD_NUMBER}"
+                    bat "docker push ${'myapp'}:latest"
                 }
             }
         }
@@ -49,8 +49,8 @@ pipeline {
             steps {
                 echo 'Triggering rolling update on Kubernetes cluster...'
                 // Instructs Kubernetes to roll out the newly built container image
-                sh "kubectl apply -f k8s-deployment.yaml"
-                sh "kubectl rollout status deployment/webapp-deployment"
+                bat "kubectl apply -f k8s-deployment.yaml"
+                bat "kubectl rollout status deployment/webapp-deployment"
             }
         }
     }
@@ -59,7 +59,7 @@ pipeline {
         always {
             echo 'Cleaning up Jenkins workspace...'
             // Cleans up built images locally on the Jenkins server to save disk space
-            sh "docker rmi ${myapp}:${myapp} ${myapp}:latest || true"
+            bat "docker rmi ${'myapp'}:${'myapp'} ${'myapp'}:latest || true"
         }
         success {
             echo 'Pipeline completed successfully! Webapp is live.'
