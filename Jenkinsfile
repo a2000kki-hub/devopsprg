@@ -19,7 +19,7 @@ pipeline {
             steps {
                 echo 'Installing HTMLHint and testing source code...'
                 // Runs the same HTML lint test inside the Jenkins workspace
-                bat 'npx install htmlhint index.html'
+                bat 'npx htmlhint index.html'
             }
         }
 
