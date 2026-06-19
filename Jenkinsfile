@@ -19,7 +19,7 @@ pipeline {
             steps {
                 echo 'Installing HTMLHint and testing source code...'
                 // Runs the same HTML lint test inside the Jenkins workspace
-                bat 'npm install -g htmlhint'
+                bat 'npx install -g htmlhint'
                 bat 'htmlhint index.html'
             }
         }
@@ -59,7 +59,7 @@ pipeline {
         always {
             echo 'Cleaning up Jenkins workspace...'
             // Cleans up built images locally on the Jenkins server to save disk space
-            bat "docker rmi ${'myapp'}:${'myapp'} ${'myapp'}:latest || true"
+            bat "docker rmi ${'myapp'}:${'myapp'} ${'myapp'}:latest", returnstatus: true
         }
         success {
             echo 'Pipeline completed successfully! Webapp is live.'
