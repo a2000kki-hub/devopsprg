@@ -52,8 +52,8 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 echo 'Triggering rolling update on Kubernetes cluster...'
-                // Added flag to bypass the HTTP/HTTPS protocol verification mismatch
-                bat 'kubectl apply -f deployment.yaml --validate=false --insecure-skip-tls-verify=true'
+                // Forcing kubectl to target your specific active minikube control plane port
+                bat 'kubectl apply -f deployment.yaml --server=https://127.0.0.1:65243 --validate=false --insecure-skip-tls-verify=true'
             }
         }
     }
