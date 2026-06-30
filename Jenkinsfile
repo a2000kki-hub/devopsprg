@@ -33,18 +33,17 @@ pipeline {
         stage('Push to Registry') {
             steps {
                 echo 'Logging into Docker Hub and pushing image...'
-                // Using the environment variable DOCKER_HUB_CREDS we defined at the top
                 withCredentials([usernamePassword(credentialsId: "${env.DOCKER_HUB_CREDS}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    // Log in using Windows batch variable syntax (%PASS%, %USER%)
+                    // Log in securely using Windows batch variable syntax
                     bat "echo %PASS% | docker login -u %USER% --password-stdin"
                     
                     // Tag using the build number and your Docker Hub repository prefix
-                    bat "docker tag myapp:${BUILD_NUMBER} %USER%/myapp:${BUILD_NUMBER}"
-                    bat "docker tag myapp:${BUILD_NUMBER} %USER%/myapp:latest"
+                    bat "docker tag myapp:${BUILD_NUMBER} ${env.IMAGE_NAME}:${BUILD_NUMBER}"
+                    bat "docker tag myapp:${BUILD_NUMBER} ${env.IMAGE_NAME}:latest"
                     
-                    // Push the prefixed repositories to Docker Hub
-                    bat "docker push %USER%/myapp:${BUILD_NUMBER}"
-                    bat "docker push %USER%/myapp:latest"
+                    // Push to Docker Hub
+                    bat "docker push ${env.IMAGE_NAME}:${BUILD_NUMBER}"
+                    bat "docker push ${env.IMAGE_NAME}:latest"
                 }
             }
         }
@@ -62,9 +61,9 @@ pipeline {
 
     post {
         always {
-            echo 'Cleaning up Jenkins workspace...'
-            // Dynamically cleans up exactly what was created this build
-            bat script: "docker rmi myapp:${BUILD_NUMBER} myapp:latest dh2uhf2i/myapp:${BUILD_NUMBER} dh2uhf2i/myapp:latest", returnStatus: true
+            echo 'Cleaning up local Docker images...'
+            // Uses the environment variable dynamically instead of a hardcoded string
+            bat script: "docker rmi myapp:${BUILD_NUMBER} myapp:latest ${env.IMAGE_NAME}:${BUILD_NUMBER} ${env.IMAGE_NAME}:latest", returnStatus: true
         }
         success {
             echo 'Pipeline completed successfully! Webapp is live.'
